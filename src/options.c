@@ -115,7 +115,12 @@ static void usage(const char *argv0, int ret) {
 	    "  Default opacity for active windows. (0.0 - 1.0)\n"
 	    "\n"
             "--corner-radius value\n"
+            "--corner-radius-top-left value\n"
+            "--corner-radius-top-right value\n"
+            "--corner-radius-bottom-right value\n"
+            "--corner-radius-bottom-left value\n"
             "  Round the corners of windows. (defaults to 0)\n"
+            "  Individual rounded corners (e.g. top-left) have higher precedence than --corner-radius\n"
             "\n"
             "--rounded-corners-exclude condition\n"
             "  Exclude conditions for rounded corners.\n"
@@ -456,10 +461,14 @@ static const struct option longopts[] = {
     {"blur-deviation", required_argument, NULL, 330},
     {"blur-strength", required_argument, NULL, 331},
     {"corner-radius", required_argument, NULL, 332},
-    {"rounded-corners-exclude", required_argument, NULL, 333},
-    {"round-borders", required_argument, NULL, 334},
-    {"round-borders-exclude", required_argument, NULL, 335},
-    {"round-borders-rule", required_argument, NULL, 336},
+    {"corner-radius-top-left", required_argument, NULL, 333},
+    {"corner-radius-top-right", required_argument, NULL, 334},
+    {"corner-radius-bottom-right", required_argument, NULL, 335},
+    {"corner-radius-bottom-left", required_argument, NULL, 336},
+    {"rounded-corners-exclude", required_argument, NULL, 337},
+    {"round-borders", required_argument, NULL, 338},
+    {"round-borders-exclude", required_argument, NULL, 339},
+    {"round-borders-rule", required_argument, NULL, 340},
     {"experimental-backends", no_argument, NULL, 733},
     {"monitor-repaint", no_argument, NULL, 800},
     {"diagnostics", no_argument, NULL, 801},
@@ -869,10 +878,14 @@ bool get_cfg(options_t *opt, int argc, char *const *argv, bool shadow_enable,
 			opt->blur_strength = parse_kawase_blur_strength(atoi(optarg));
 			break;
 		case 332: opt->corner_radius = atoi(optarg); break;
-		case 333: condlst_add(&opt->rounded_corners_blacklist, optarg); break;
-		case 334: opt->round_borders = atoi(optarg); break;
-		case 335: condlst_add(&opt->round_borders_blacklist, optarg); break;
-		case 336:
+		case 333: opt->corner_radius_top_left = atoi(optarg); break;
+		case 334: opt->corner_radius_top_right = atoi(optarg); break;
+		case 335: opt->corner_radius_bottom_right = atoi(optarg); break;
+		case 336: opt->corner_radius_bottom_left = atoi(optarg); break;
+		case 337: condlst_add(&opt->rounded_corners_blacklist, optarg); break;
+		case 338: opt->round_borders = atoi(optarg); break;
+		case 339: condlst_add(&opt->round_borders_blacklist, optarg); break;
+		case 340:
 			// --round_borders_rule
 			if (!parse_rule_border(&opt->round_borders_rules, optarg))
 				exit(1);

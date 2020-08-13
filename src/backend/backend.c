@@ -189,7 +189,13 @@ void paint_all_new(session_t *ps, struct managed_win *t, bool ignore_damage) {
 
 		// Store the window background for rounded corners
 		// If rounded corners backup the region first
-		if (w->corner_radius > 0) {
+
+		bool has_corner_radius = w->corner_radius > 0.0 ||
+					 w->corner_radius_top_left > 0.0 ||
+					 w->corner_radius_top_right > 0.0 ||
+					 w->corner_radius_bottom_left > 0.0 ||
+					 w->corner_radius_bottom_left > 0.0;
+		if (has_corner_radius) {
 			const int16_t x = w->g.x;
 			const int16_t y = w->g.y;
 			const auto wid = to_u16_checked(w->widthb);
@@ -391,7 +397,7 @@ void paint_all_new(session_t *ps, struct managed_win *t, bool ignore_damage) {
 		}
 
 		// Round the corners as last step after blur/shadow/dim/etc
-		if (w->corner_radius > 0.0) {
+		if (has_corner_radius) {
 			ps->backend_data->ops->round(ps->backend_data, w,
 						ps->backend_round_context, w->win_image,
 						&reg_bound, &reg_visible);
