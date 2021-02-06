@@ -921,6 +921,10 @@ static void win_determine_rounded_corners(session_t *ps, struct managed_win *w) 
 		//log_warn("xy(%d %d) wh(%d %d) will NOT round corners", w->g.x, w->g.y, w->widthb, w->heightb);
 	} else {
 		w->corner_radius = ps->o.corner_radius;
+		w->corner_radius_top_left = ps->o.corner_radius_top_left;
+		w->corner_radius_top_right = ps->o.corner_radius_top_right;
+		w->corner_radius_bottom_right = ps->o.corner_radius_bottom_right;
+		w->corner_radius_bottom_left = ps->o.corner_radius_bottom_left;
 		//log_warn("xy(%d %d) wh(%d %d) will round corners", w->g.x, w->g.y, w->widthb, w->heightb);
 
 		// HACK: we reset this so we can query the color once
@@ -933,6 +937,26 @@ static void win_determine_rounded_corners(session_t *ps, struct managed_win *w) 
             ps->o.wintype_option[w->window_type].corner_radius >= 0) {
 		    w->corner_radius = ps->o.wintype_option[w->window_type].corner_radius;
             //log_warn("xy(%d %d) wh(%d %d) wintypes:corner_radius: %d", w->g.x, w->g.y, w->widthb, w->heightb, w->corner_radius);
+        }
+	    if (!safe_isnan(ps->o.wintype_option[w->window_type].corner_radius_top_left) &&
+            ps->o.wintype_option[w->window_type].corner_radius_top_left >= 0) {
+		    w->corner_radius_top_left = ps->o.wintype_option[w->window_type].corner_radius_top_left;
+            //log_warn("xy(%d %d) wh(%d %d) wintypes:corner_radius_top_left: %d", w->g.x, w->g.y, w->widthb, w->heightb, w->corner_radius_top_left);
+        }
+	    if (!safe_isnan(ps->o.wintype_option[w->window_type].corner_radius_top_right) &&
+            ps->o.wintype_option[w->window_type].corner_radius_top_right >= 0) {
+		    w->corner_radius_top_right = ps->o.wintype_option[w->window_type].corner_radius_top_right;
+            //log_warn("xy(%d %d) wh(%d %d) wintypes:corner_radius_top_right: %d", w->g.x, w->g.y, w->widthb, w->heightb, w->corner_radius_top_right);
+        }
+	    if (!safe_isnan(ps->o.wintype_option[w->window_type].corner_radius_bottom_right) &&
+            ps->o.wintype_option[w->window_type].corner_radius_bottom_right >= 0) {
+		    w->corner_radius_bottom_right = ps->o.wintype_option[w->window_type].corner_radius_bottom_right;
+            //log_warn("xy(%d %d) wh(%d %d) wintypes:corner_radius_bottom_right: %d", w->g.x, w->g.y, w->widthb, w->heightb, w->corner_radius_bottom_right);
+        }
+	    if (!safe_isnan(ps->o.wintype_option[w->window_type].corner_radius_bottom_left) &&
+            ps->o.wintype_option[w->window_type].corner_radius_bottom_left >= 0) {
+		    w->corner_radius_bottom_left = ps->o.wintype_option[w->window_type].corner_radius_bottom_left;
+            //log_warn("xy(%d %d) wh(%d %d) wintypes:corner_radius_bottom_left: %d", w->g.x, w->g.y, w->widthb, w->heightb, w->corner_radius_bottom_left);
         }
 
 	    void *val = NULL;
@@ -1312,6 +1336,10 @@ struct win *fill_win(session_t *ps, struct win *w) {
 	    .shadow_paint = PAINT_INIT,
 
 		.corner_radius = 0,
+		.corner_radius_top_left = -1,
+		.corner_radius_top_right = -1,
+		.corner_radius_bottom_right = -1,
+		.corner_radius_bottom_left = -1,
 	};
 
 	assert(!w->destroyed);

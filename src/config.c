@@ -526,6 +526,10 @@ void set_default_winopts(options_t *opt, win_option_mask_t *mask, bool shadow_en
 		}
         if (!mask[i].corner_radius) {
             opt->wintype_option[i].corner_radius = -1;
+            opt->wintype_option[i].corner_radius_top_left = -1;
+            opt->wintype_option[i].corner_radius_top_right = -1;
+            opt->wintype_option[i].corner_radius_bottom_right = -1;
+            opt->wintype_option[i].corner_radius_bottom_left = -1;
         }
         if (!mask[i].round_borders) {
             opt->wintype_option[i].round_borders = -1;
@@ -603,6 +607,11 @@ char *parse_config(options_t *opt, const char *config_file, bool *shadow_enable,
 
 	    .track_leader = false,
 
+		.corner_radius = 0,
+		.corner_radius_top_left = -1,
+		.corner_radius_top_right = -1,
+		.corner_radius_bottom_right = -1,
+		.corner_radius_bottom_left = -1,
 		.rounded_corners_blacklist = NULL,
 		.round_borders_blacklist = NULL,
 		.round_borders_rules = NULL

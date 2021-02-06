@@ -315,6 +315,26 @@ static inline void parse_wintype_config(const config_t *cfg, const char *member_
 			mask->corner_radius = true;
             //log_warn("%s: corner-radius: %d", member_name, ival);
 		}
+		if (config_setting_lookup_int(setting, "corner-radius-top-left", &ival)) {
+			o->corner_radius_top_left = ival;
+			mask->corner_radius = true;
+            //log_warn("%s: corner-radius: %d", member_name, ival);
+		}
+		if (config_setting_lookup_int(setting, "corner-radius-top-right", &ival)) {
+			o->corner_radius_top_right = ival;
+			mask->corner_radius = true;
+            //log_warn("%s: corner-radius: %d", member_name, ival);
+		}
+		if (config_setting_lookup_int(setting, "corner-radius-bottom-right", &ival)) {
+			o->corner_radius_bottom_right = ival;
+			mask->corner_radius = true;
+            //log_warn("%s: corner-radius: %d", member_name, ival);
+		}
+		if (config_setting_lookup_int(setting, "corner-radius-bottom-left", &ival)) {
+			o->corner_radius_bottom_left = ival;
+			mask->corner_radius = true;
+            //log_warn("%s: corner-radius: %d", member_name, ival);
+		}
         if (config_setting_lookup_int(setting, "round-borders", &ival)) {
 			o->round_borders = ival;
 			mask->round_borders = true;
@@ -406,6 +426,14 @@ char *parse_config_libconfig(options_t *opt, const char *config_file, bool *shad
 		opt->active_opacity = normalize_d(dval);
 	// --corner-radius
 	config_lookup_int(&cfg, "corner-radius", &opt->corner_radius);
+	// --corner-radius-top-left
+	config_lookup_int(&cfg, "corner-radius-top-left", &opt->corner_radius_top_left);
+	// --corner-radius-top-right
+	config_lookup_int(&cfg, "corner-radius-top-right", &opt->corner_radius_top_right);
+	// --corner-radius-bottom-right
+	config_lookup_int(&cfg, "corner-radius-bottom-right", &opt->corner_radius_bottom_right);
+	// --corner-radius-bottom-left
+	config_lookup_int(&cfg, "corner-radius-bottom-left", &opt->corner_radius_bottom_left);
 	// --rounded-corners-exclude
 	parse_cfg_condlst(&cfg, &opt->rounded_corners_blacklist, "rounded-corners-exclude");
 	// --round-borders

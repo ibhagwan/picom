@@ -759,6 +759,10 @@ static bool initialize_blur(session_t *ps) {
 static bool initialize_round_corners(session_t *ps) {
 	struct round_corners_args cargs;
 	cargs.corner_radius = ps->o.corner_radius;
+	cargs.corner_radius_top_left = ps->o.corner_radius_top_left;
+	cargs.corner_radius_top_right = ps->o.corner_radius_top_right;
+	cargs.corner_radius_bottom_right = ps->o.corner_radius_bottom_right;
+	cargs.corner_radius_bottom_left = ps->o.corner_radius_bottom_left;
 	cargs.round_borders = ps->o.round_borders;
 	ps->backend_round_context = ps->backend_data->ops->create_round_context(
 	    ps->backend_data, &cargs);
@@ -790,6 +794,7 @@ static bool initialize_backend(session_t *ps) {
 		if (!initialize_round_corners(ps)) {
 			log_fatal("Failed to prepare for rounded corners, will ignore...");
 			ps->o.corner_radius = 0;
+			ps->o.corner_radius_top_left = ps->o.corner_radius_top_right = ps->o.corner_radius_bottom_right = ps->o.corner_radius_bottom_left = -1;
 		}
 
 		// window_stack shouldn't include window that's

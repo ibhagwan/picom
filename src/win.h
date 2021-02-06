@@ -204,6 +204,10 @@ struct managed_win {
 
 	/// Corner radius
 	int corner_radius;
+	int corner_radius_top_left;
+	int corner_radius_top_right;
+	int corner_radius_bottom_right;
+	int corner_radius_bottom_left;
 	bool round_borders;
 	float border_col[4];
     uint16_t border_width;
@@ -448,14 +452,19 @@ struct managed_win *attr_pure win_stack_find_next_managed(const session_t *ps,
 void free_win_res(session_t *ps, struct managed_win *w);
 
 static inline void win_region_remove_corners(const struct managed_win *w, region_t *res) {
+	int top_left_radius = w->corner_radius_top_left >= 0 ? w->corner_radius_top_left : w->corner_radius;
+	int top_right_radius = w->corner_radius_top_right >= 0 ? w->corner_radius_top_right : w->corner_radius;
+	int bottom_left_radius = w->corner_radius_bottom_left >= 0 ? w->corner_radius_bottom_left : w->corner_radius;
+	int bottom_right_radius = w->corner_radius_bottom_right >= 0 ? w->corner_radius_bottom_right : w->corner_radius;
+
 	region_t corners;
 	pixman_region32_init_rects(
 		&corners,
 		(rect_t[]){
-			{.x1 = 0, .y1 = 0, .x2 = w->corner_radius, .y2 = w->corner_radius},
-			{.x1 = 0, .y1 = w->heightb-w->corner_radius, .x2 = w->corner_radius, .y2 = w->heightb},
-			{.x1 = w->widthb-w->corner_radius, .y1 = 0, .x2 = w->widthb, .y2 = w->corner_radius},
-			{.x1 = w->widthb-w->corner_radius, .y1 = w->heightb-w->corner_radius, .x2 = w->widthb, .y2 = w->heightb},
+			{.x1 = 0, .y1 = 0, .x2 = top_left_radius, .y2 = top_left_radius},
+			{.x1 = 0, .y1 = w->heightb-bottom_left_radius, .x2 = bottom_left_radius, .y2 = w->heightb},
+			{.x1 = w->widthb-top_right_radius, .y1 = 0, .x2 = w->widthb, .y2 = top_right_radius},
+			{.x1 = w->widthb-bottom_right_radius, .y1 = w->heightb-bottom_right_radius, .x2 = w->widthb, .y2 = w->heightb},
 		},
 		4);
 	pixman_region32_subtract(res, res, &corners);

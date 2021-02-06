@@ -1031,8 +1031,13 @@ bool gl_round(backend_t *backend_data attr_unused, struct managed_win *w, void *
 		glUniformMatrix4fv(ppass->projection_loc, 1, false, projection_matrix[0]);
 	if (ppass->unifm_tex_bg >= 0)
 			glUniform1i(ppass->unifm_tex_bg, (GLint)1);
-	if (ppass->unifm_radius)
-		glUniform1f(ppass->unifm_radius, (float)w->corner_radius);
+	if (ppass->unifm_radius) {
+		int top_left_radius = w->corner_radius_top_left >= 0 ? w->corner_radius_top_left : w->corner_radius;
+		int top_right_radius = w->corner_radius_top_right >= 0 ? w->corner_radius_top_right : w->corner_radius;
+		int bottom_left_radius = w->corner_radius_bottom_left >= 0 ? w->corner_radius_bottom_left : w->corner_radius;
+		int bottom_right_radius = w->corner_radius_bottom_right >= 0 ? w->corner_radius_bottom_right : w->corner_radius;
+		glUniform4f(ppass->unifm_radius, (float)top_right_radius, (float)bottom_right_radius, (float)top_left_radius, (float)bottom_left_radius);
+	}
 	if (ppass->unifm_texcoord)
 		glUniform2f(ppass->unifm_texcoord, (float)w->g.x, (float)w->g.y);
 	if (ppass->unifm_texsize)
@@ -1815,7 +1820,7 @@ void *gl_create_round_context(struct backend_base *base attr_unused, void *args 
 		static const char *FRAG_SHADER_ROUND_CORNERS = GLSL(330,
 			uniform sampler2D tex;
 			uniform sampler2D tex_bg;
-			uniform float u_radius;
+			uniform vec4 u_radius;
 			uniform float u_borderw;
 			uniform vec2 u_texcoord;
 			uniform vec2 u_texsize;
@@ -1823,9 +1828,13 @@ void *gl_create_round_context(struct backend_base *base attr_unused, void *args 
 			in vec2 texcoord;
 			out vec4 out_color;
 			// https://www.shadertoy.com/view/ltS3zW
-			float RectSDF(vec2 p, vec2 b, float r) {
-			  vec2 d = abs(p) - b + vec2(r);
-			  return min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - r;
+			// https://www.shadertoy.com/view/4llXD7
+			float RectSDF( in vec2 p, in vec2 b, in vec4 r )
+			{
+			    r.xy = (p.x>0.0)?r.xy : r.zw;
+			    r.x  = (p.y>0.0)?r.x  : r.y;
+			    vec2 q = abs(p)-b+r.x;
+			    return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r.x;
 			}
 			void main() {
 				vec2 coord = vec2(u_texcoord.x, u_resolution.y-u_texsize.y-u_texcoord.y);
@@ -1834,7 +1843,6 @@ void *gl_create_round_context(struct backend_base *base attr_unused, void *args 
 				vec4 u_v4FillColor = vec4(0.0, 0.0, 0.0, 0.0);  // Inside rect, transparent
 				vec4 v4FromColor = u_v4BorderColor;				// Always the border color. If no border, this still should be set
 				vec4 v4ToColor = u_v4WndBgColor;				// Outside corners color = background texture
-				float u_fRadiusPx = u_radius;
 				float u_fHalfBorderThickness = u_borderw / 2.0;
 
 				// misc tests, uncomment for diff rect colors
@@ -1847,7 +1855,7 @@ void *gl_create_round_context(struct backend_base *base attr_unused, void *args 
 				vec2 u_v2HalfShapeSizePx = u_texsize/2.0 - vec2(u_fHalfBorderThickness);
 				vec2 v_v2CenteredPos = (gl_FragCoord.xy - u_texsize.xy / 2.0 - coord);
 
-				float fDist = RectSDF(v_v2CenteredPos, u_v2HalfShapeSizePx, u_fRadiusPx - u_fHalfBorderThickness);
+				float fDist = RectSDF(v_v2CenteredPos, u_v2HalfShapeSizePx, u_radius - u_fHalfBorderThickness);
 				if (u_fHalfBorderThickness > 0.0) {
 					if (fDist < 0.0) {
 						v4ToColor = u_v4FillColor;
@@ -1856,7 +1864,7 @@ void *gl_create_round_context(struct backend_base *base attr_unused, void *args 
 				} else {
 					v4FromColor = u_v4FillColor;
 				}
-				float fBlendAmount = smoothstep(-1.0, 1.0, fDist);
+				float fBlendAmount = smoothstep(u_fHalfBorderThickness > 0 ? -1.0 : 0.0, 1.0, fDist);
 
 				// final color
 				vec4 c = mix(v4FromColor, v4ToColor, fBlendAmount);

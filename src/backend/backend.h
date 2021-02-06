@@ -75,6 +75,10 @@ struct kernel_blur_args {
 
 struct round_corners_args {
 	int corner_radius;
+	int corner_radius_top_left;
+	int corner_radius_top_right;
+	int corner_radius_bottom_right;
+	int corner_radius_bottom_left;
 	bool round_borders;
 };
 

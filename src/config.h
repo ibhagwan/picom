@@ -56,6 +56,10 @@ typedef struct win_option {
 	bool redir_ignore;
 	double opacity;
     int corner_radius;
+    int corner_radius_top_left;
+    int corner_radius_top_right;
+    int corner_radius_bottom_right;
+    int corner_radius_bottom_left;
     int round_borders;
 } win_option_t;
 
@@ -255,6 +259,10 @@ typedef struct options {
 
 	// === Rounded corners related ===
 	int corner_radius;
+	int corner_radius_top_left;
+	int corner_radius_top_right;
+	int corner_radius_bottom_right;
+	int corner_radius_bottom_left;
 	/// Rounded corners blacklist. A linked list of conditions.
 	c2_lptr_t *rounded_corners_blacklist;
     /// Do we round the borders of rounded windows?
