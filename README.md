@@ -14,7 +14,7 @@
 
 - Rounded corners code from [sdhand](https://github.com/sdhand/picom) which is also ported to the experimetnal XRender backend.
 
-- New code for rounded corners (+borders) on the glx backend using GLSL frangment shader for both legacy and experimental backends
+- New code for rounded corners (+borders) on the glx backend using GLSL fragment shader for both legacy and experimental backends
 
 For more information read [my reddit post](https://www.reddit.com/r/unixporn/comments/fs8trg/oc_comptonpicom_fork_with_both_tryone144s_dual/)
 
