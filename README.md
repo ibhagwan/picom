@@ -2,7 +2,7 @@
 
 [**Click here for the most recent branch of this fork**](https://github.com/ibhagwan/picom/tree/next-rebase)
 
-![picom.png](https://github.com/ibhagwan/picom/raw/next/picom.png)
+fix corner shadow for rounded window
 
 ## Why another picom fork?
 
